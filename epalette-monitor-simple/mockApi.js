@@ -15,10 +15,12 @@ function metersToDegLng(m, atLat){
 
 function init(){
   if(state.size>0) return;
-  // 走行車は最初の停留所からスタート
+  // 停留所からスタート
   for(const vid of ACTIVE_VEHICLE_IDS){
     const s0 = BUS_STOPS[0];
-    state.set(vid, { vin:vid, lat:s0.lat, lng:s0.lng, target:1% BUS_STOPS.length, battery: 80, plug:'Other' });
+    let r = Math.random()*0.005
+    
+    state.set(vid, { vin:vid, lat:s0.lat-r, lng:s0.lng-r, target:1% BUS_STOPS.length, battery: 80, plug:'Other' });
   }
   // 待機車は近くで充電中
   const seeds = { V2001:{lat:35.6330,lng:139.7780}, V2002:{lat:35.6290,lng:139.7795} };
@@ -29,6 +31,7 @@ function init(){
 }
 init();
 
+// 状態遷移の記述
 function stepActive(vid){
   const s = state.get(vid);
   if(!s) return;

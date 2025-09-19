@@ -1,4 +1,4 @@
-// ★ スケジューラ：APIの取得タイミングだけを担当（UIを直接触らない）
+// 非同期処理を管理するやつです．
 
 import { callApi } from './apiClient.js';
 import { ACTIVE_VEHICLE_IDS, STANDBY_VEHICLE_IDS,

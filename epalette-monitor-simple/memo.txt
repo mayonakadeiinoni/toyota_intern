@@ -1,0 +1,89 @@
+// もとのJSON文字列
+let jsonStr = `{
+  "vin": "V1001",
+  "lat": 35.631,
+  "lng": 139.778,
+  "battery": 80,
+  "plug": "Other"
+}`;
+
+// JSONをオブジェクトに変換
+let data = JSON.parse(jsonStr);
+
+// --- 一部を上書き ---
+data.battery = 90;   // 残量を変更
+data.plug = "Charging"; // 状態を変更
+
+// 変更したオブジェクトを再度JSON文字列に変換
+let newJsonStr = JSON.stringify(data, null, 2);
+
+console.log(newJsonStr);
+
+🔹 1. 音声ファイルを再生する方法
+HTMLに <audio> タグを用意
+<audio id="alertSound" src="alert.mp3" preload="auto"></audio>
+
+JSで再生
+function playAlertSound(){
+  const audio = document.getElementById('alertSound');
+  if(audio) {
+    audio.currentTime = 0; // 再生位置を先頭に戻す
+    audio.play();
+  }
+}
+
+onCharge内で呼ぶ
+if(isRun && ch['remaining-charge-time'] <= 40){
+  playAlertSound();
+}
+
+🔹 2. 画面にアラートを出す方法
+単純な alert()
+if(isRun && ch['remaining-charge-time'] <= 40){
+  alert(`⚠ 車両 ${id} のバッテリー残量が40%以下です！`);
+}
+
+
+→ ただし、毎回モーダルダイアログが出るので少し使いにくい。
+
+カスタムアラート（画面の上に赤いボックスを出す）
+<div id="alertBox" class="hidden"></div>
+
+#alertBox {
+  position: fixed;
+  top: 10px; left: 50%;
+  transform: translateX(-50%);
+  background: red; color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  z-index: 9999;
+}
+.hidden { display: none; }
+
+function showAlert(msg){
+  const box = document.getElementById('alertBox');
+  if(!box) return;
+  box.textContent = msg;
+  box.classList.remove('hidden');
+  setTimeout(()=> box.classList.add('hidden'), 5000); // 5秒で消える
+}
+
+onCharge内で呼ぶ
+if(isRun && ch['remaining-charge-time'] <= 40){
+  showAlert(`⚠ 車両 ${id} のバッテリー残量が40%以下です！`);
+}
+
+🔹 3. 音声＋画面アラートを両方
+if(isRun && ch['remaining-charge-time'] <= 40){
+  playAlertSound();
+  showAlert(`⚠ 車両 ${id} のバッテリー残量が40%以下です！`);
+}
+
+まとめ
+
+音声警告 → <audio> タグと audio.play()
+
+画面警告 → alert() またはカスタムUI
+
+両方同時も簡単にできる

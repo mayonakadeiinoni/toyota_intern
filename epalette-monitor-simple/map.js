@@ -1,4 +1,4 @@
-// ★ 地図のことだけを担当（見た目は分かりやすく太く明るく）
+
 import { ACTIVE_VEHICLE_IDS, STANDBY_VEHICLE_IDS, BUS_STOPS, STOP_RADIUS_M } from './config.js';
 
 let map;
@@ -60,16 +60,21 @@ export function upsertVehicleMarker(vid, loc, charge){
   m.bindPopup(html);
 }
 
-// できるだけ近くに寄る（まず車両があれば車両、無ければ停留所）
-export function fitToAllMarkers(){
+
+// すべての車両がちょうど収まるズームにする
+export function fitToAllMarkers({
+  minZoom = 15,
+  maxZoom = 19,
+  padding = [10, 10],
+} = {}) {
   const ms = Array.from(markers.values());
-  if(ms.length>0){
-    const g = L.featureGroup(ms);
-    map.fitBounds(g.getBounds(), {padding:[8,8], maxZoom:19});
-    return;
-  }
-  if(stopLayer){
-    const g = L.featureGroup(stopLayer.getLayers());
-    map.fitBounds(g.getBounds(), {padding:[12,12], maxZoom:17});
-  }
+  const layers = [];
+
+  if (ms.length > 0) layers.push(...ms);
+  if (stopLayer) layers.push(...stopLayer.getLayers());
+
+  if (layers.length === 0) return;
+
+  const g = L.featureGroup(layers);
+  map.fitBounds(g.getBounds(), {padding, maxZoom});
 }
